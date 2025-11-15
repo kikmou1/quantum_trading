@@ -1,0 +1,139 @@
+# Asset Universe Configuration
+
+# Small portfolio for initial testing (20 assets)
+small_portfolio:
+  name: "S&P 500 Large Cap - 20 Assets"
+  tickers:
+    - AAPL   # Apple - Technology
+    - MSFT   # Microsoft - Technology
+    - GOOGL  # Alphabet - Technology
+    - AMZN   # Amazon - Consumer Cyclical
+    - NVDA   # NVIDIA - Technology
+    - META   # Meta - Technology
+    - TSLA   # Tesla - Automotive
+    - JPM    # JPMorgan - Financial
+    - V      # Visa - Financial
+    - JNJ    # Johnson & Johnson - Healthcare
+    - WMT    # Walmart - Consumer Defensive
+    - PG     # Procter & Gamble - Consumer Defensive
+    - MA     # Mastercard - Financial
+    - HD     # Home Depot - Consumer Cyclical
+    - DIS    # Disney - Entertainment
+    - NFLX   # Netflix - Entertainment
+    - KO     # Coca-Cola - Consumer Defensive
+    - PEP    # PepsiCo - Consumer Defensive
+    - MCD    # McDonald's - Consumer Cyclical
+    - NKE    # Nike - Consumer Cyclical
+
+# Medium portfolio (50 assets)
+medium_portfolio:
+  name: "Diversified S&P 500 - 50 Assets"
+  tickers:
+    # Technology (15)
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - NVDA
+    - META
+    - TSLA
+    - AVGO
+    - ORCL
+    - CSCO
+    - ADBE
+    - CRM
+    - INTC
+    - AMD
+    - QCOM
+    # Financial (10)
+    - JPM
+    - BAC
+    - WFC
+    - GS
+    - MS
+    - C
+    - BLK
+    - V
+    - MA
+    - AXP
+    # Healthcare (10)
+    - JNJ
+    - UNH
+    - PFE
+    - ABBV
+    - MRK
+    - TMO
+    - LLY
+    - ABT
+    - DHR
+    - BMY
+    # Consumer (10)
+    - WMT
+    - PG
+    - KO
+    - PEP
+    - COST
+    - HD
+    - MCD
+    - NKE
+    - SBUX
+    - TGT
+    # Energy & Industrials (5)
+    - XOM
+    - CVX
+    - BA
+    - CAT
+    - GE
+
+# Large portfolio for scalability testing (100 assets)
+large_portfolio:
+  name: "S&P 500 Top 100"
+  # Will be generated programmatically or use index ETF components
+  use_sp500_top_100: true
+
+# Sector-specific portfolios for testing
+tech_heavy:
+  name: "Technology Focused"
+  tickers:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - NVDA
+    - META
+    - TSLA
+    - ORCL
+    - CSCO
+    - ADBE
+    - CRM
+    - INTC
+    - AMD
+    - QCOM
+    - AVGO
+
+# Defensive portfolio
+defensive:
+  name: "Defensive Low Beta"
+  tickers:
+    - JNJ
+    - PG
+    - KO
+    - PEP
+    - WMT
+    - MCD
+    - CL
+    - CLX
+    - KMB
+    - GIS
+    - K
+    - CPB
+
+# Benchmark
+benchmark:
+  name: "Market Benchmark"
+  ticker: SPY  # S&P 500 ETF
+
+# Risk-free rate proxy
+risk_free:
+  ticker: "^IRX"  # 13-week Treasury Bill
+  default_rate: 0.04  # 4% annual rate as fallback
