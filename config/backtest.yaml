@@ -1,0 +1,139 @@
+# Backtesting Configuration
+
+# Time Period
+period:
+  start_date: "2018-01-01"
+  end_date: "2024-12-31"
+  training_ratio: 0.70  # 70% for training
+  validation_ratio: 0.15  # 15% for validation
+  test_ratio: 0.15  # 15% for testing
+
+# Rebalancing
+rebalancing:
+  frequency: "monthly"  # daily, weekly, monthly, quarterly, semi-annual, annual
+  method: "calendar"  # calendar (fixed dates) or threshold (when drift exceeds %)
+  drift_threshold: 0.05  # 5% drift triggers rebalance (if method=threshold)
+  lookback_window: 252  # Trading days for optimization window
+
+# Transaction Costs
+transaction_costs:
+  commission_pct: 0.001  # 0.1% per trade (10 bps)
+  slippage_pct: 0.0005  # 0.05% slippage (5 bps)
+  spread_pct: 0.0001  # 0.01% bid-ask spread (1 bp)
+  min_commission: 0.0  # Minimum commission per trade
+  total_cost_pct: 0.0015  # Total: 15 bps per trade
+
+# Initial Capital
+capital:
+  initial: 100000.0  # $100,000 starting capital
+  currency: "USD"
+
+# Position Sizing
+position_sizing:
+  method: "proportional"  # proportional, equal_dollar, risk_parity
+  min_position_size: 100.0  # Minimum $100 per position
+  fractional_shares: false  # Allow fractional shares
+
+# Risk Management
+risk_management:
+  use_stop_loss: false
+  stop_loss_pct: 0.10  # 10% stop loss
+  use_take_profit: false
+  take_profit_pct: 0.20  # 20% take profit
+  max_leverage: 1.0  # No leverage
+  reserve_cash_pct: 0.0  # % of portfolio to keep in cash
+
+# Performance Measurement
+performance:
+  benchmark: "SPY"  # S&P 500 ETF
+  risk_free_rate: 0.04  # 4% annual
+  confidence_level: 0.95  # For VaR/CVaR
+  rolling_window: 252  # For rolling metrics (1 year)
+
+# Walk-Forward Analysis
+walk_forward:
+  enabled: true
+  train_period: 252  # Days to train on
+  test_period: 63  # Days to test on (quarter)
+  step_size: 21  # Days to step forward (monthly)
+  purge_period: 5  # Days to purge between train/test
+
+# Algorithms to Test
+algorithms:
+  classical:
+    - equal_weight
+    - mean_variance
+    - minimum_variance
+    - maximum_sharpe
+    - hierarchical_risk_parity
+    - risk_parity
+
+  quantum_inspired:
+    - qaoa
+    - vqe
+    - quantum_annealing
+    - hybrid
+
+# Outputs
+outputs:
+  save_results: true
+  results_dir: "results/data"
+  figures_dir: "results/figures"
+  reports_dir: "results/reports"
+  save_weights: true  # Save portfolio weights over time
+  save_returns: true  # Save portfolio returns
+  save_metrics: true  # Save performance metrics
+  export_format: ["csv", "excel"]  # csv, excel, json
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "backtest.log"
+  console_output: true
+
+# Parallel Processing
+parallel:
+  enabled: true
+  n_jobs: -1  # -1 means use all available cores
+  backend: "loky"  # loky, multiprocessing, threading
+
+# Visualization
+visualization:
+  generate_plots: true
+  plot_format: ["png", "html"]  # png, svg, pdf, html
+  plot_dpi: 300
+  interactive: true  # Generate interactive Plotly charts
+
+  plots:
+    - equity_curves
+    - drawdown_chart
+    - returns_distribution
+    - risk_return_scatter
+    - rolling_sharpe
+    - correlation_matrix
+    - weight_evolution
+    - sector_allocation
+
+# Statistical Tests
+statistical_tests:
+  enabled: true
+  tests:
+    - paired_t_test  # Compare mean returns
+    - friedman_test  # Non-parametric comparison
+    - sharpe_test  # Compare Sharpe ratios
+    - jarque_bera  # Test normality
+    - adf_test  # Test stationarity
+
+# Monte Carlo Simulation
+monte_carlo:
+  enabled: false
+  n_simulations: 1000
+  confidence_intervals: [0.05, 0.95]  # 90% confidence interval
+
+# Sensitivity Analysis
+sensitivity:
+  enabled: false
+  parameters:
+    - risk_aversion: [0.1, 0.3, 0.5, 0.7, 0.9]
+    - lookback_period: [63, 126, 252, 504]
+    - rebalancing_frequency: ["monthly", "quarterly"]
