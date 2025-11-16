@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import logging
 
-from signal_generator import TradeSignal, SignalType
+from .signal_generator import TradeSignal, SignalType
 
 logger = logging.getLogger(__name__)
 
@@ -325,7 +325,7 @@ if __name__ == "__main__":
     # Test portfolio
     logging.basicConfig(level=logging.INFO)
 
-    from signal_generator import TradeSignal, SignalType
+    from .signal_generator import TradeSignal, SignalType
 
     portfolio = VirtualPortfolio(initial_capital=100000)
 
