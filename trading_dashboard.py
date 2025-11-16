@@ -17,11 +17,10 @@ import logging
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from data_collection.fetchers import DataFetcher
-from data_collection.preprocessors import DataPreprocessor
 from utils.asset_manager import AssetManager
 from trading_simulator.signal_generator import HybridSignalGenerator, SignalType
 from trading_simulator.virtual_portfolio import VirtualPortfolio
+import yfinance as yf
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -53,18 +52,28 @@ def load_asset_data(symbol: str, start_date: str, end_date: str):
     """Load and cache asset data."""
     with st.spinner(f"Loading data for {symbol}..."):
         try:
-            fetcher = DataFetcher()
-            preprocessor = DataPreprocessor()
+            # Download full OHLCV data
+            data = yf.download(
+                symbol,
+                start=start_date,
+                end=end_date,
+                auto_adjust=True,
+                progress=False
+            )
 
-            prices = fetcher.get_prices([symbol], start_date, end_date)
-            clean_prices = preprocessor.clean_prices(prices)
-
-            if len(clean_prices) == 0:
+            if data is None or len(data) == 0:
                 st.error(f"No data available for {symbol}")
                 return None
 
-            st.success(f"✅ Loaded {len(clean_prices)} days of data")
-            return clean_prices
+            # Clean up: remove NaN rows
+            data = data.dropna()
+
+            if len(data) == 0:
+                st.error(f"No valid data after cleaning for {symbol}")
+                return None
+
+            st.success(f"✅ Loaded {len(data)} days of data")
+            return data
 
         except Exception as e:
             st.error(f"Error loading data: {e}")
