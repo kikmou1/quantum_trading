@@ -78,7 +78,15 @@ class YahooFinanceFetcher:
 
             # Extract close prices
             if len(tickers) == 1:
-                prices = data['Close'].to_frame(name=tickers[0])
+                # Handle both Series and DataFrame (yfinance versions differ)
+                close_data = data['Close']
+                if isinstance(close_data, pd.Series):
+                    prices = close_data.to_frame(name=tickers[0])
+                else:
+                    # Already a DataFrame
+                    prices = close_data
+                    if prices.columns[0] != tickers[0]:
+                        prices.columns = [tickers[0]]
             else:
                 prices = data['Close']
 
