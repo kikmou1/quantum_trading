@@ -12,6 +12,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _to_scalar(value):
+    """Convert pandas Series or other types to scalar value."""
+    if isinstance(value, pd.Series):
+        return float(value.values[0])
+    return float(value)
+
+
 class SignalType(Enum):
     """Trade signal types."""
     LONG = "LONG"
@@ -102,11 +109,11 @@ class TechnicalSignalGenerator:
         rs = gain / loss
         rsi = 100 - (100 / (1 + rs))
 
-        current_rsi = rsi.iloc[-1]
-        current_price = data['Close'].iloc[-1]
+        current_rsi = _to_scalar(rsi.iloc[-1])
+        current_price = _to_scalar(data['Close'].iloc[-1])
 
         # Calculate ATR for stop loss
-        atr = self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1]
+        atr = _to_scalar(self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1])
 
         # Generate signal
         if current_rsi < 30:  # Oversold - Long signal
@@ -165,15 +172,20 @@ class TechnicalSignalGenerator:
         macd = exp1 - exp2
         signal = macd.ewm(span=9, adjust=False).mean()
 
-        current_price = data['Close'].iloc[-1]
-        atr = self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1]
+        current_price = _to_scalar(data['Close'].iloc[-1])
+        atr = _to_scalar(self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1])
 
         # Check for crossover
         if len(macd) < 2:
             return None
 
-        macd_cross_above = macd.iloc[-2] < signal.iloc[-2] and macd.iloc[-1] > signal.iloc[-1]
-        macd_cross_below = macd.iloc[-2] > signal.iloc[-2] and macd.iloc[-1] < signal.iloc[-1]
+        macd_prev = _to_scalar(macd.iloc[-2])
+        macd_curr = _to_scalar(macd.iloc[-1])
+        signal_prev = _to_scalar(signal.iloc[-2])
+        signal_curr = _to_scalar(signal.iloc[-1])
+
+        macd_cross_above = macd_prev < signal_prev and macd_curr > signal_curr
+        macd_cross_below = macd_prev > signal_prev and macd_curr < signal_curr
 
         if macd_cross_above:  # Bullish crossover
             entry_price = current_price
@@ -231,12 +243,12 @@ class TechnicalSignalGenerator:
         upper_band = sma + (2 * std)
         lower_band = sma - (2 * std)
 
-        current_price = data['Close'].iloc[-1]
-        current_upper = upper_band.iloc[-1]
-        current_lower = lower_band.iloc[-1]
-        current_sma = sma.iloc[-1]
+        current_price = _to_scalar(data['Close'].iloc[-1])
+        current_upper = _to_scalar(upper_band.iloc[-1])
+        current_lower = _to_scalar(lower_band.iloc[-1])
+        current_sma = _to_scalar(sma.iloc[-1])
 
-        atr = self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1]
+        atr = _to_scalar(self.calculate_atr(data['High'], data['Low'], data['Close']).iloc[-1])
 
         # Price touching lower band - Long signal
         if current_price <= current_lower:
@@ -297,13 +309,13 @@ class MomentumSignalGenerator:
         """
         Breakout of recent high/low.
         """
-        current_price = data['Close'].iloc[-1]
-        recent_high = data['High'].iloc[-lookback:-1].max()
-        recent_low = data['Low'].iloc[-lookback:-1].min()
+        current_price = _to_scalar(data['Close'].iloc[-1])
+        recent_high = _to_scalar(data['High'].iloc[-lookback:-1].max())
+        recent_low = _to_scalar(data['Low'].iloc[-lookback:-1].min())
 
-        atr = TechnicalSignalGenerator().calculate_atr(
+        atr = _to_scalar(TechnicalSignalGenerator().calculate_atr(
             data['High'], data['Low'], data['Close']
-        ).iloc[-1]
+        ).iloc[-1])
 
         # Breakout above recent high
         if current_price > recent_high:
