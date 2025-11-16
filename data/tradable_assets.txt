@@ -1,0 +1,310 @@
+# TRADABLE ASSETS DATABASE
+# Format: Symbol|Name|Category|Exchange|Description
+
+# ============================================================================
+# MAJOR STOCK INDICES
+# ============================================================================
+^GSPC|S&P 500|Index|US|Standard & Poor's 500 Index
+^DJI|Dow Jones Industrial Average|Index|US|Dow Jones 30 Industrial Stocks
+^IXIC|NASDAQ Composite|Index|US|NASDAQ All Companies
+^RUT|Russell 2000|Index|US|Russell 2000 Small Cap Index
+^VIX|CBOE Volatility Index|Index|US|VIX Fear Index
+^FTSE|FTSE 100|Index|UK|UK Top 100 Companies
+^GDAXI|DAX|Index|Germany|German Stock Index
+^FCHI|CAC 40|Index|France|French Stock Market Index
+^N225|Nikkei 225|Index|Japan|Japanese Stock Index
+000001.SS|SSE Composite|Index|China|Shanghai Stock Exchange
+^HSI|Hang Seng|Index|Hong Kong|Hong Kong Stock Index
+^BSESN|BSE Sensex|Index|India|Bombay Stock Exchange
+^BVSP|Bovespa|Index|Brazil|Brazilian Stock Index
+
+# ============================================================================
+# PRECIOUS METALS
+# ============================================================================
+GC=F|Gold Futures|Commodity|COMEX|Gold Spot Price
+SI=F|Silver Futures|Commodity|COMEX|Silver Spot Price
+PL=F|Platinum Futures|Commodity|NYMEX|Platinum Spot Price
+PA=F|Palladium Futures|Commodity|NYMEX|Palladium Spot Price
+GLD|SPDR Gold Trust|ETF|US|Gold ETF
+SLV|iShares Silver Trust|ETF|US|Silver ETF
+PPLT|Aberdeen Physical Platinum|ETF|US|Platinum ETF
+PALL|Aberdeen Physical Palladium|ETF|US|Palladium ETF
+
+# ============================================================================
+# ENERGY COMMODITIES
+# ============================================================================
+CL=F|Crude Oil WTI|Commodity|NYMEX|West Texas Intermediate Crude Oil
+BZ=F|Brent Crude Oil|Commodity|ICE|Brent Crude Oil
+NG=F|Natural Gas|Commodity|NYMEX|Natural Gas Futures
+RB=F|RBOB Gasoline|Commodity|NYMEX|Gasoline Futures
+HO=F|Heating Oil|Commodity|NYMEX|Heating Oil Futures
+USO|United States Oil Fund|ETF|US|Crude Oil ETF
+UNG|United States Natural Gas|ETF|US|Natural Gas ETF
+XLE|Energy Select Sector SPDR|ETF|US|Energy Sector ETF
+
+# ============================================================================
+# AGRICULTURAL COMMODITIES
+# ============================================================================
+ZC=F|Corn Futures|Commodity|CBOT|Corn
+ZW=F|Wheat Futures|Commodity|CBOT|Wheat
+ZS=F|Soybean Futures|Commodity|CBOT|Soybeans
+ZO=F|Oat Futures|Commodity|CBOT|Oats
+KC=F|Coffee Futures|Commodity|ICE|Coffee
+SB=F|Sugar Futures|Commodity|ICE|Sugar
+CC=F|Cocoa Futures|Commodity|ICE|Cocoa
+CT=F|Cotton Futures|Commodity|ICE|Cotton
+OJ=F|Orange Juice Futures|Commodity|ICE|Orange Juice
+LE=F|Live Cattle|Commodity|CME|Live Cattle
+GF=F|Feeder Cattle|Commodity|CME|Feeder Cattle
+HE=F|Lean Hogs|Commodity|CME|Lean Hogs
+
+# ============================================================================
+# INDUSTRIAL METALS
+# ============================================================================
+HG=F|Copper Futures|Commodity|COMEX|Copper
+ALI=F|Aluminum Futures|Commodity|LME|Aluminum
+COPX|Global X Copper Miners|ETF|US|Copper Miners ETF
+PICK|iShares MSCI Global Metals|ETF|US|Base Metals ETF
+
+# ============================================================================
+# CURRENCIES (FOREX)
+# ============================================================================
+EURUSD=X|Euro / US Dollar|Forex|FX|EUR/USD Exchange Rate
+GBPUSD=X|British Pound / US Dollar|Forex|FX|GBP/USD Exchange Rate
+JPYUSD=X|Japanese Yen / US Dollar|Forex|FX|JPY/USD Exchange Rate
+AUDUSD=X|Australian Dollar / US Dollar|Forex|FX|AUD/USD Exchange Rate
+USDCAD=X|US Dollar / Canadian Dollar|Forex|FX|USD/CAD Exchange Rate
+USDCHF=X|US Dollar / Swiss Franc|Forex|FX|USD/CHF Exchange Rate
+USDJPY=X|US Dollar / Japanese Yen|Forex|FX|USD/JPY Exchange Rate
+DX-Y.NYB|US Dollar Index|Index|ICE|Dollar Index
+
+# ============================================================================
+# CRYPTOCURRENCIES
+# ============================================================================
+BTC-USD|Bitcoin|Crypto|Crypto|Bitcoin to USD
+ETH-USD|Ethereum|Crypto|Crypto|Ethereum to USD
+BNB-USD|Binance Coin|Crypto|Crypto|Binance Coin to USD
+XRP-USD|Ripple|Crypto|Crypto|Ripple to USD
+ADA-USD|Cardano|Crypto|Crypto|Cardano to USD
+SOL-USD|Solana|Crypto|Crypto|Solana to USD
+DOT-USD|Polkadot|Crypto|Crypto|Polkadot to USD
+DOGE-USD|Dogecoin|Crypto|Crypto|Dogecoin to USD
+MATIC-USD|Polygon|Crypto|Crypto|Polygon to USD
+LINK-USD|Chainlink|Crypto|Crypto|Chainlink to USD
+
+# ============================================================================
+# BONDS & FIXED INCOME
+# ============================================================================
+^TNX|10-Year Treasury Yield|Bond|US|US 10-Year Treasury Note Yield
+^TYX|30-Year Treasury Yield|Bond|US|US 30-Year Treasury Bond Yield
+^FVX|5-Year Treasury Yield|Bond|US|US 5-Year Treasury Note Yield
+^IRX|13-Week Treasury Bill|Bond|US|US 3-Month T-Bill
+TLT|iShares 20+ Year Treasury|ETF|US|Long-Term Treasury Bonds
+IEF|iShares 7-10 Year Treasury|ETF|US|Mid-Term Treasury Bonds
+SHY|iShares 1-3 Year Treasury|ETF|US|Short-Term Treasury Bonds
+LQD|iShares Investment Grade Corp|ETF|US|Corporate Bonds
+HYG|iShares High Yield Corp|ETF|US|High Yield Bonds
+TIP|iShares TIPS Bond|ETF|US|Inflation-Protected Securities
+
+# ============================================================================
+# US MEGA CAP TECH (FAANG+)
+# ============================================================================
+AAPL|Apple Inc|Stock|NASDAQ|Technology - Consumer Electronics
+MSFT|Microsoft Corp|Stock|NASDAQ|Technology - Software
+GOOGL|Alphabet Inc Class A|Stock|NASDAQ|Technology - Internet Services
+AMZN|Amazon.com Inc|Stock|NASDAQ|Consumer Cyclical - Internet Retail
+META|Meta Platforms Inc|Stock|NASDAQ|Technology - Social Media
+TSLA|Tesla Inc|Stock|NASDAQ|Automotive - Electric Vehicles
+NVDA|NVIDIA Corp|Stock|NASDAQ|Technology - Semiconductors
+NFLX|Netflix Inc|Stock|NASDAQ|Entertainment - Streaming
+
+# ============================================================================
+# US LARGE CAP STOCKS (S&P 100)
+# ============================================================================
+JPM|JPMorgan Chase|Stock|NYSE|Financial Services - Banks
+JNJ|Johnson & Johnson|Stock|NYSE|Healthcare - Pharmaceuticals
+V|Visa Inc|Stock|NYSE|Financial Services - Credit
+WMT|Walmart Inc|Stock|NYSE|Consumer Defensive - Retail
+PG|Procter & Gamble|Stock|NYSE|Consumer Defensive - Household
+MA|Mastercard Inc|Stock|NYSE|Financial Services - Credit
+UNH|UnitedHealth Group|Stock|NYSE|Healthcare - Insurance
+HD|Home Depot Inc|Stock|NYSE|Consumer Cyclical - Home Improvement
+DIS|Walt Disney Co|Stock|NYSE|Entertainment - Media
+BAC|Bank of America|Stock|NYSE|Financial Services - Banks
+XOM|Exxon Mobil Corp|Stock|NYSE|Energy - Oil & Gas
+PFE|Pfizer Inc|Stock|NYSE|Healthcare - Pharmaceuticals
+KO|Coca-Cola Co|Stock|NYSE|Consumer Defensive - Beverages
+ABBV|AbbVie Inc|Stock|NYSE|Healthcare - Biotechnology
+PEP|PepsiCo Inc|Stock|NASDAQ|Consumer Defensive - Beverages
+COST|Costco Wholesale|Stock|NASDAQ|Consumer Defensive - Retail
+TMO|Thermo Fisher Scientific|Stock|NYSE|Healthcare - Diagnostics
+ABT|Abbott Laboratories|Stock|NYSE|Healthcare - Medical Devices
+CSCO|Cisco Systems|Stock|NASDAQ|Technology - Networking
+AVGO|Broadcom Inc|Stock|NASDAQ|Technology - Semiconductors
+ORCL|Oracle Corp|Stock|NYSE|Technology - Software
+ADBE|Adobe Inc|Stock|NASDAQ|Technology - Software
+NKE|Nike Inc|Stock|NYSE|Consumer Cyclical - Apparel
+CRM|Salesforce Inc|Stock|NYSE|Technology - Software
+MCD|McDonald's Corp|Stock|NYSE|Consumer Cyclical - Restaurants
+INTC|Intel Corp|Stock|NASDAQ|Technology - Semiconductors
+AMD|Advanced Micro Devices|Stock|NASDAQ|Technology - Semiconductors
+QCOM|Qualcomm Inc|Stock|NASDAQ|Technology - Semiconductors
+TXN|Texas Instruments|Stock|NASDAQ|Technology - Semiconductors
+CAT|Caterpillar Inc|Stock|NYSE|Industrials - Machinery
+GE|General Electric|Stock|NYSE|Industrials - Conglomerate
+BA|Boeing Co|Stock|NYSE|Industrials - Aerospace
+MMM|3M Co|Stock|NYSE|Industrials - Conglomerate
+HON|Honeywell International|Stock|NASDAQ|Industrials - Conglomerate
+CVX|Chevron Corp|Stock|NYSE|Energy - Oil & Gas
+WFC|Wells Fargo|Stock|NYSE|Financial Services - Banks
+GS|Goldman Sachs|Stock|NYSE|Financial Services - Investment Banking
+MS|Morgan Stanley|Stock|NYSE|Financial Services - Investment Banking
+BLK|BlackRock Inc|Stock|NYSE|Financial Services - Asset Management
+AXP|American Express|Stock|NYSE|Financial Services - Credit
+C|Citigroup Inc|Stock|NYSE|Financial Services - Banks
+USB|U.S. Bancorp|Stock|NYSE|Financial Services - Banks
+
+# ============================================================================
+# SEMICONDUCTOR STOCKS
+# ============================================================================
+TSM|Taiwan Semiconductor|Stock|NYSE|Semiconductors - Manufacturing
+ASML|ASML Holding|Stock|NASDAQ|Semiconductors - Equipment
+MU|Micron Technology|Stock|NASDAQ|Semiconductors - Memory
+LRCX|Lam Research|Stock|NASDAQ|Semiconductors - Equipment
+AMAT|Applied Materials|Stock|NASDAQ|Semiconductors - Equipment
+KLAC|KLA Corp|Stock|NASDAQ|Semiconductors - Equipment
+MRVL|Marvell Technology|Stock|NASDAQ|Semiconductors - Fabless
+NXPI|NXP Semiconductors|Stock|NASDAQ|Semiconductors - Analog
+
+# ============================================================================
+# BIOTECH & PHARMACEUTICALS
+# ============================================================================
+GILD|Gilead Sciences|Stock|NASDAQ|Biotechnology
+AMGN|Amgen Inc|Stock|NASDAQ|Biotechnology
+BIIB|Biogen Inc|Stock|NASDAQ|Biotechnology
+VRTX|Vertex Pharmaceuticals|Stock|NASDAQ|Biotechnology
+REGN|Regeneron Pharmaceuticals|Stock|NASDAQ|Biotechnology
+MRK|Merck & Co|Stock|NYSE|Pharmaceuticals
+LLY|Eli Lilly|Stock|NYSE|Pharmaceuticals
+BMY|Bristol-Myers Squibb|Stock|NYSE|Pharmaceuticals
+MRNA|Moderna Inc|Stock|NASDAQ|Biotechnology
+
+# ============================================================================
+# ELECTRIC VEHICLES & CLEAN ENERGY
+# ============================================================================
+RIVN|Rivian Automotive|Stock|NASDAQ|Electric Vehicles
+LCID|Lucid Group|Stock|NASDAQ|Electric Vehicles
+NIO|NIO Inc|Stock|NYSE|Electric Vehicles
+F|Ford Motor|Stock|NYSE|Automotive
+GM|General Motors|Stock|NYSE|Automotive
+ENPH|Enphase Energy|Stock|NASDAQ|Solar Energy
+SEDG|SolarEdge Technologies|Stock|NASDAQ|Solar Energy
+FSLR|First Solar|Stock|NASDAQ|Solar Energy
+PLUG|Plug Power|Stock|NASDAQ|Hydrogen Fuel Cells
+NEE|NextEra Energy|Stock|NYSE|Renewable Energy
+
+# ============================================================================
+# AEROSPACE & DEFENSE
+# ============================================================================
+LMT|Lockheed Martin|Stock|NYSE|Aerospace & Defense
+RTX|Raytheon Technologies|Stock|NYSE|Aerospace & Defense
+NOC|Northrop Grumman|Stock|NYSE|Aerospace & Defense
+GD|General Dynamics|Stock|NYSE|Aerospace & Defense
+LHX|L3Harris Technologies|Stock|NYSE|Aerospace & Defense
+
+# ============================================================================
+# CHINESE TECH STOCKS
+# ============================================================================
+BABA|Alibaba Group|Stock|NYSE|E-commerce
+BIDU|Baidu Inc|Stock|NASDAQ|Internet Services
+JD|JD.com Inc|Stock|NASDAQ|E-commerce
+PDD|Pinduoduo Inc|Stock|NASDAQ|E-commerce
+TCEHY|Tencent Holdings ADR|Stock|OTC|Technology Conglomerate
+
+# ============================================================================
+# SECTOR ETFs
+# ============================================================================
+SPY|SPDR S&P 500 ETF|ETF|US|S&P 500 Index
+QQQ|Invesco QQQ Trust|ETF|US|NASDAQ 100
+IWM|iShares Russell 2000|ETF|US|Small Cap
+XLF|Financial Select Sector|ETF|US|Financial Sector
+XLK|Technology Select Sector|ETF|US|Technology Sector
+XLV|Health Care Select Sector|ETF|US|Healthcare Sector
+XLI|Industrial Select Sector|ETF|US|Industrial Sector
+XLP|Consumer Staples Select|ETF|US|Consumer Staples
+XLY|Consumer Discretionary Select|ETF|US|Consumer Discretionary
+XLU|Utilities Select Sector|ETF|US|Utilities Sector
+XLRE|Real Estate Select Sector|ETF|US|Real Estate Sector
+VNQ|Vanguard Real Estate|ETF|US|Real Estate Investment Trusts
+EEM|iShares MSCI Emerging Markets|ETF|US|Emerging Markets
+EFA|iShares MSCI EAFE|ETF|US|International Developed Markets
+VTI|Vanguard Total Stock Market|ETF|US|Total US Stock Market
+VEA|Vanguard FTSE Developed Markets|ETF|US|International Stocks
+VWO|Vanguard FTSE Emerging Markets|ETF|US|Emerging Market Stocks
+AGG|iShares Core US Aggregate Bond|ETF|US|Total Bond Market
+
+# ============================================================================
+# THEMATIC ETFs
+# ============================================================================
+ARK|ARK Innovation ETF|ETF|US|Disruptive Innovation
+ARKK|ARK Innovation ETF|ETF|US|Innovation
+ARKW|ARK Next Generation Internet|ETF|US|Internet
+ARKG|ARK Genomic Revolution|ETF|US|Genomics
+ARKF|ARK Fintech Innovation|ETF|US|Fintech
+ICLN|iShares Clean Energy|ETF|US|Clean Energy
+TAN|Invesco Solar|ETF|US|Solar Energy
+LIT|Global X Lithium|ETF|US|Lithium & Battery Tech
+BOTZ|Global X Robotics & AI|ETF|US|Robotics & AI
+HACK|ETFMG Prime Cyber Security|ETF|US|Cybersecurity
+ESPO|VanEck Video Gaming|ETF|US|Gaming & Esports
+CLOU|Global X Cloud Computing|ETF|US|Cloud Computing
+
+# ============================================================================
+# VOLATILITY & INVERSE ETFs
+# ============================================================================
+UVXY|ProShares Ultra VIX Short-Term|ETF|US|2x VIX Futures
+VIXY|ProShares VIX Short-Term|ETF|US|VIX Futures
+SVXY|ProShares Short VIX Short-Term|ETF|US|Inverse VIX
+SQQQ|ProShares UltraPro Short QQQ|ETF|US|3x Inverse NASDAQ
+TQQQ|ProShares UltraPro QQQ|ETF|US|3x NASDAQ
+SPXU|ProShares UltraPro Short S&P500|ETF|US|3x Inverse S&P 500
+UPRO|ProShares UltraPro S&P500|ETF|US|3x S&P 500
+TZA|Direxion Small Cap Bear 3X|ETF|US|3x Inverse Russell 2000
+TNA|Direxion Small Cap Bull 3X|ETF|US|3x Russell 2000
+
+# ============================================================================
+# INTERNATIONAL STOCKS
+# ============================================================================
+TSM|Taiwan Semiconductor|Stock|NYSE|Taiwan - Semiconductors
+ASML|ASML Holding|Stock|NASDAQ|Netherlands - Semiconductors
+NVO|Novo Nordisk|Stock|NYSE|Denmark - Pharmaceuticals
+SAP|SAP SE|Stock|NYSE|Germany - Software
+TM|Toyota Motor|Stock|NYSE|Japan - Automotive
+SONY|Sony Group|Stock|NYSE|Japan - Electronics
+UL|Unilever|Stock|NYSE|UK - Consumer Goods
+BP|BP plc|Stock|NYSE|UK - Energy
+HSBC|HSBC Holdings|Stock|NYSE|UK - Banking
+RIO|Rio Tinto|Stock|NYSE|UK - Mining
+BHP|BHP Group|Stock|NYSE|Australia - Mining
+
+# ============================================================================
+# REAL ESTATE INVESTMENT TRUSTS (REITs)
+# ============================================================================
+AMT|American Tower|REIT|NYSE|Cell Towers
+PLD|Prologis|REIT|NYSE|Industrial REITs
+CCI|Crown Castle|REIT|NYSE|Cell Towers
+EQIX|Equinix|REIT|NASDAQ|Data Centers
+PSA|Public Storage|REIT|NYSE|Self Storage
+WELL|Welltower|REIT|NYSE|Healthcare REITs
+SPG|Simon Property Group|REIT|NYSE|Retail REITs
+O|Realty Income|REIT|NYSE|Retail REITs
+DLR|Digital Realty Trust|REIT|NYSE|Data Centers
+
+# ============================================================================
+# EMERGING MARKET STOCKS
+# ============================================================================
+VALE|Vale SA|Stock|NYSE|Brazil - Mining
+ITUB|Itau Unibanco|Stock|NYSE|Brazil - Banking
+INFY|Infosys Ltd|Stock|NYSE|India - IT Services
+WIT|Wipro Ltd|Stock|NYSE|India - IT Services
+IBN|ICICI Bank|Stock|NYSE|India - Banking
