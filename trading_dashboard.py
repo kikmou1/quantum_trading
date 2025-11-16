@@ -202,14 +202,16 @@ def run_simulation(symbol: str, data: pd.DataFrame, trading_date: pd.Timestamp,
 
                 # Monitor position over forecast period
                 for check_date in future_data.index:
-                    current_price = future_data.loc[check_date, 'Close']
+                    current_price_raw = future_data.loc[check_date, 'Close']
+                    current_price = float(current_price_raw.values[0] if isinstance(current_price_raw, pd.Series) else current_price_raw)
                     portfolio.update_positions({symbol: current_price}, check_date)
                     portfolio.record_equity_snapshot(check_date)
 
                 # Get actual outcome
-                actual_high = future_data['High'].max()
-                actual_low = future_data['Low'].min()
-                actual_final = future_data['Close'].iloc[-1]
+                actual_high = float(future_data['High'].max())
+                actual_low = float(future_data['Low'].min())
+                actual_final_raw = future_data['Close'].iloc[-1]
+                actual_final = float(actual_final_raw.values[0] if isinstance(actual_final_raw, pd.Series) else actual_final_raw)
 
                 results = {
                     'signal': best_signal,
@@ -528,7 +530,12 @@ def main():
                 st.metric("Last Date", data.index[-1].strftime('%Y-%m-%d'))
 
             with col4:
-                current_price = data['Close'].iloc[-1]
+                # Extract scalar value - handle both Series and scalar returns
+                current_price_raw = data['Close'].iloc[-1]
+                if isinstance(current_price_raw, pd.Series):
+                    current_price = current_price_raw.values[0]
+                else:
+                    current_price = float(current_price_raw)
                 st.metric("Last Price", f"${current_price:.2f}")
 
             # Price chart
