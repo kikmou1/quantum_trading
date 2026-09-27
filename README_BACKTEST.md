@@ -17,7 +17,6 @@ This framework implements and compares 10+ portfolio optimization algorithms acr
 
 **Quantum-Inspired Methods:**
 - QAOA (Quantum Approximate Optimization Algorithm)
-- VQE (Variational Quantum Eigensolver)
 - Simulated Quantum Annealing
 - Hybrid Quantum-Classical
 
