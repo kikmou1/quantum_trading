@@ -12,6 +12,7 @@ from pypfopt import EfficientFrontier, risk_models, expected_returns
 from pypfopt import HRPOpt, BlackLittermanModel, black_litterman
 from pypfopt import objective_functions
 from scipy.optimize import minimize
+import scipy.cluster.hierarchy as sch
 import cvxpy as cp
 
 import sys
@@ -20,6 +21,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 from base import BaseOptimizer
 
 logger = logging.getLogger(__name__)
+
+# PyPortfolioOpt's HRPOpt (up to at least 1.6.0) validates the linkage method
+# against scipy's private _LINKAGE_METHODS, which SciPy 1.18 removed.
+if not hasattr(sch, "_LINKAGE_METHODS"):
+    sch._LINKAGE_METHODS = {
+        "single": 0, "complete": 1, "average": 2, "centroid": 3,
+        "median": 4, "ward": 5, "weighted": 6,
+    }
 
 
 class EqualWeightOptimizer(BaseOptimizer):
@@ -180,7 +189,7 @@ class HierarchicalRiskParityOptimizer(BaseOptimizer):
         Optimize using HRP.
         """
         hrp = HRPOpt(returns)
-        hrp.optimize()
+        hrp.optimize(linkage_method=self.linkage_method)
 
         weights = hrp.clean_weights()
         weights_series = pd.Series(weights)

@@ -26,6 +26,10 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `run_backtest.py` compounded log returns as if they were simple returns. It
   now uses simple returns.
 - Replaced `fillna(method=...)`, which was removed in pandas 3.
+- Hierarchical Risk Parity crashed with SciPy 1.18, because PyPortfolioOpt
+  reads a private SciPy attribute that was removed. Added a compatibility
+  shim. The `linkage_method` argument is now passed through instead of
+  being ignored.
 - The QAOA optimizer imported `qiskit.primitives.Sampler`, which was removed
   in Qiskit 2.0, so it was disabled even with Qiskit installed.
 
