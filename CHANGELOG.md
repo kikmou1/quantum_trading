@@ -5,6 +5,17 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- `trading_simulator.py` crashed on its first trading day because the
+  signal generators received closing prices only. It now downloads full
+  daily bars (`DataFetcher.get_ohlcv`).
+- The dashboard's trade simulation failed whenever a signal was generated,
+  because yfinance's two-level column headers turned prices into Series.
+  Bars are now flattened on load (`normalize_ohlcv`).
+- `run_backtest.py` reported the worst drawdown as the "lowest drawdown",
+  and compared quantum-inspired and classical Sharpe ratios as a ratio. It
+  now reports the least severe drawdown and the Sharpe difference.
+
 ## [0.1.0] - 2026-09-27
 
 First tagged release.
