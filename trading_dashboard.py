@@ -17,6 +17,7 @@ import logging
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
+from data_collection.fetchers import normalize_ohlcv
 from utils.asset_manager import AssetManager
 from trading_simulator.signal_generator import HybridSignalGenerator, SignalType
 from trading_simulator.virtual_portfolio import VirtualPortfolio
@@ -65,8 +66,8 @@ def load_asset_data(symbol: str, start_date: str, end_date: str):
                 st.error(f"No data available for {symbol}")
                 return None
 
-            # Clean up: remove NaN rows
-            data = data.dropna()
+            # Flat Open/High/Low/Close/Volume columns without NaN rows
+            data = normalize_ohlcv(data, symbol)
 
             if len(data) == 0:
                 st.error(f"No valid data after cleaning for {symbol}")

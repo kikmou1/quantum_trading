@@ -16,7 +16,6 @@ import logging
 import yaml
 
 from data_collection.fetchers import DataFetcher
-from data_collection.preprocessors import DataPreprocessor
 from trading_simulator.signal_generator import HybridSignalGenerator, SignalType
 from trading_simulator.virtual_portfolio import VirtualPortfolio
 
@@ -54,7 +53,6 @@ class PointInTimeTradingSimulator:
         self.max_position_pct = max_position_pct
 
         self.data_fetcher = DataFetcher()
-        self.preprocessor = DataPreprocessor()
         self.signal_generator = HybridSignalGenerator()
         self.portfolio = VirtualPortfolio(initial_capital, max_position_pct)
 
@@ -69,12 +67,12 @@ class PointInTimeTradingSimulator:
 
         for ticker in self.tickers:
             try:
-                prices = self.data_fetcher.get_prices([ticker], start_date, end_date)
-                clean_prices = self.preprocessor.clean_prices(prices)
+                # The signal generators need full daily bars, not just closes
+                bars = self.data_fetcher.get_ohlcv(ticker, start_date, end_date)
 
-                if len(clean_prices) > 0:
-                    self.historical_data[ticker] = clean_prices
-                    logger.info(f"  ✓ {ticker}: {len(clean_prices)} days")
+                if len(bars) > 0:
+                    self.historical_data[ticker] = bars
+                    logger.info(f"  ✓ {ticker}: {len(bars)} days")
                 else:
                     logger.warning(f"  ✗ {ticker}: No data available")
 

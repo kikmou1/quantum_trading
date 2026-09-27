@@ -137,6 +137,35 @@ class YahooFinanceFetcher:
 
         return returns
 
+    def fetch_ohlcv(
+        self,
+        ticker: str,
+        start_date: str,
+        end_date: str,
+        interval: str = "1d"
+    ) -> pd.DataFrame:
+        """
+        Fetch daily bars (Open, High, Low, Close, Volume) for one ticker.
+
+        Args:
+            ticker: Ticker symbol
+            start_date: Start date in 'YYYY-MM-DD' format
+            end_date: End date in 'YYYY-MM-DD' format
+            interval: Data interval (1d, 1wk, 1mo)
+
+        Returns:
+            DataFrame with Open, High, Low, Close and Volume columns
+        """
+        data = yf.download(
+            ticker,
+            start=start_date,
+            end=end_date,
+            interval=interval,
+            auto_adjust=True,
+            progress=False
+        )
+        return normalize_ohlcv(data, ticker)
+
     def fetch_ticker_info(self, ticker: str) -> Dict:
         """
         Fetch company/asset information.
@@ -248,6 +277,21 @@ class DataFetcher:
         else:
             raise ValueError(f"Unsupported data source: {self.primary_source}")
 
+    def get_ohlcv(
+        self,
+        ticker: str,
+        start_date: str,
+        end_date: str,
+        interval: str = "1d"
+    ) -> pd.DataFrame:
+        """
+        Get daily bars (Open, High, Low, Close, Volume) for one ticker.
+        """
+        if self.primary_source == "yahoo":
+            return self.yahoo.fetch_ohlcv(ticker, start_date, end_date, interval)
+        else:
+            raise ValueError(f"Unsupported data source: {self.primary_source}")
+
     def get_returns(
         self,
         tickers: List[str],
@@ -288,6 +332,27 @@ class DataFetcher:
             return self.yahoo.fetch_all_info(tickers)
         else:
             raise ValueError(f"Unsupported data source: {self.primary_source}")
+
+
+OHLCV_COLUMNS = ["Open", "High", "Low", "Close", "Volume"]
+
+
+def normalize_ohlcv(data: pd.DataFrame, ticker: str) -> pd.DataFrame:
+    """
+    Return a single ticker's bars with flat Open/High/Low/Close/Volume columns.
+
+    Recent yfinance versions return (field, ticker) MultiIndex columns even for
+    one ticker; older versions return flat field columns.
+    """
+    if isinstance(data.columns, pd.MultiIndex):
+        level = 1 if ticker in data.columns.get_level_values(1) else 0
+        data = data.xs(ticker, axis=1, level=level)
+
+    missing = [c for c in OHLCV_COLUMNS if c not in data.columns]
+    if missing:
+        raise ValueError(f"{ticker}: missing columns {missing}")
+
+    return data[OHLCV_COLUMNS].dropna()
 
 
 def load_tickers_from_config(config_file: Path, portfolio_name: str = "small_portfolio") -> List[str]:

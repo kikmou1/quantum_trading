@@ -246,7 +246,8 @@ def main():
     print(f"   Annual Return: {best_return['annualized_return']*100:.2f}%")
     print(f"   Total Return: {best_return['total_return_pct']:.2f}%")
 
-    lowest_dd = comparison_df_sorted.nsmallest(1, 'maximum_drawdown').iloc[0]
+    # Drawdowns are negative, so the least severe one is the largest value
+    lowest_dd = comparison_df_sorted.nlargest(1, 'maximum_drawdown').iloc[0]
     print(f"\n🛡️  Lowest Drawdown: {lowest_dd['optimizer_name']}")
     print(f"   Max Drawdown: {lowest_dd['maximum_drawdown']*100:.2f}%")
 
@@ -255,13 +256,15 @@ def main():
     classical_results = comparison_df_sorted[~comparison_df_sorted['optimizer_name'].str.contains('QAOA|Annealing|Hybrid|Quantum', case=False)]
 
     if len(quantum_results) > 0 and len(classical_results) > 0:
-        print("\n🔬 QUANTUM vs CLASSICAL COMPARISON")
+        print("\n🔬 QUANTUM-INSPIRED vs CLASSICAL COMPARISON")
         print("=" * 80)
-        print(f"Classical Average Sharpe: {classical_results['sharpe_ratio'].mean():.4f}")
-        print(f"Quantum Average Sharpe: {quantum_results['sharpe_ratio'].mean():.4f}")
-
-        improvement = (quantum_results['sharpe_ratio'].mean() / classical_results['sharpe_ratio'].mean() - 1) * 100
-        print(f"Quantum Improvement: {improvement:+.2f}%")
+        classical_sharpe = classical_results['sharpe_ratio'].mean()
+        quantum_sharpe = quantum_results['sharpe_ratio'].mean()
+        print(f"Classical Average Sharpe: {classical_sharpe:.4f}")
+        print(f"Quantum-Inspired Average Sharpe: {quantum_sharpe:.4f}")
+        # A difference, not a ratio: a ratio is meaningless when the
+        # classical average is close to zero or negative
+        print(f"Difference (quantum-inspired - classical): {quantum_sharpe - classical_sharpe:+.4f}")
 
     print("\n" + "=" * 80)
     print("✅ BACKTEST COMPLETE")
