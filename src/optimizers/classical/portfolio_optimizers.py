@@ -9,8 +9,10 @@ from typing import Optional, Dict
 import logging
 
 from pypfopt import EfficientFrontier, risk_models, expected_returns
-from pypfopt import HRPOpt, RiskParityOpt, BlackLittermanModel
+from pypfopt import HRPOpt, BlackLittermanModel, black_litterman
 from pypfopt import objective_functions
+from scipy.optimize import minimize
+import scipy.cluster.hierarchy as sch
 import cvxpy as cp
 
 import sys
@@ -19,6 +21,14 @@ sys.path.append(str(Path(__file__).parent.parent))
 from base import BaseOptimizer
 
 logger = logging.getLogger(__name__)
+
+# PyPortfolioOpt's HRPOpt (up to at least 1.6.0) validates the linkage method
+# against scipy's private _LINKAGE_METHODS, which SciPy 1.18 removed.
+if not hasattr(sch, "_LINKAGE_METHODS"):
+    sch._LINKAGE_METHODS = {
+        "single": 0, "complete": 1, "average": 2, "centroid": 3,
+        "median": 4, "ward": 5, "weighted": 6,
+    }
 
 
 class EqualWeightOptimizer(BaseOptimizer):
@@ -59,8 +69,8 @@ class MeanVarianceOptimizer(BaseOptimizer):
         Optimize using mean-variance framework.
         """
         # Calculate expected returns and covariance
-        mu = expected_returns.mean_historical_return(returns)
-        S = risk_models.sample_cov(returns)
+        mu = expected_returns.mean_historical_return(returns, returns_data=True)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
         # Set weight bounds
         weight_bounds = (-1, 1) if self.allow_short else (0, 1)
@@ -97,7 +107,7 @@ class MinimumVarianceOptimizer(BaseOptimizer):
         Minimize portfolio variance.
         """
         # Calculate covariance
-        S = risk_models.sample_cov(returns)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
         # Set weight bounds
         weight_bounds = (-1, 1) if self.allow_short else (0, 1)
@@ -132,8 +142,8 @@ class MaximumSharpeOptimizer(BaseOptimizer):
         Maximize Sharpe ratio.
         """
         # Calculate expected returns and covariance
-        mu = expected_returns.mean_historical_return(returns)
-        S = risk_models.sample_cov(returns)
+        mu = expected_returns.mean_historical_return(returns, returns_data=True)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
         # Set weight bounds
         weight_bounds = (-1, 1) if self.allow_short else (0, 1)
@@ -141,8 +151,16 @@ class MaximumSharpeOptimizer(BaseOptimizer):
         # Create efficient frontier
         ef = EfficientFrontier(mu, S, weight_bounds=weight_bounds)
 
-        # Maximize Sharpe ratio
-        ef.max_sharpe(risk_free_rate=self.risk_free_rate)
+        # Maximize Sharpe ratio. This is undefined when no asset is expected
+        # to beat the risk-free rate, so fall back to minimum variance.
+        try:
+            ef.max_sharpe(risk_free_rate=self.risk_free_rate)
+            self.metadata['fallback'] = None
+        except ValueError as e:
+            logger.warning(f"Max Sharpe failed ({e}), falling back to minimum variance")
+            ef = EfficientFrontier(mu, S, weight_bounds=weight_bounds)
+            ef.min_volatility()
+            self.metadata['fallback'] = 'minimum_variance'
 
         weights = ef.clean_weights()
         weights_series = pd.Series(weights)
@@ -171,7 +189,7 @@ class HierarchicalRiskParityOptimizer(BaseOptimizer):
         Optimize using HRP.
         """
         hrp = HRPOpt(returns)
-        hrp.optimize()
+        hrp.optimize(linkage_method=self.linkage_method)
 
         weights = hrp.clean_weights()
         weights_series = pd.Series(weights)
@@ -198,16 +216,30 @@ class RiskParityOptimizer(BaseOptimizer):
         Optimize for equal risk contribution.
         """
         # Calculate covariance
-        S = risk_models.sample_cov(returns)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
-        # Use pypfopt's risk parity
-        rp = RiskParityOpt(S)
-        rp.optimize()
+        # PyPortfolioOpt has no risk parity solver, so solve the convex
+        # formulation directly: min 0.5 * w'Sw - (1/n) * sum(log w), w > 0.
+        # Its solution, rescaled to sum to 1, has equal risk contributions.
+        cov = S.values
+        n = cov.shape[0]
 
-        weights = rp.clean_weights()
-        weights_series = pd.Series(weights)
+        def objective(w):
+            return 0.5 * w @ cov @ w - np.sum(np.log(w)) / n
 
-        return weights_series
+        def gradient(w):
+            return cov @ w - 1.0 / (n * w)
+
+        result = minimize(
+            objective,
+            np.full(n, 1.0 / n),
+            jac=gradient,
+            method='L-BFGS-B',
+            bounds=[(1e-10, None)] * n
+        )
+
+        weights = result.x / result.x.sum()
+        return pd.Series(weights, index=returns.columns)
 
 
 class BlackLittermanOptimizer(BaseOptimizer):
@@ -220,32 +252,42 @@ class BlackLittermanOptimizer(BaseOptimizer):
         self,
         risk_free_rate: float = 0.04,
         tau: float = 0.05,
-        market_caps: Optional[Dict] = None
+        market_caps: Optional[Dict] = None,
+        views: Optional[Dict] = None,
+        risk_aversion: float = 2.5
     ):
         super().__init__(name="BlackLitterman")
         self.risk_free_rate = risk_free_rate
         self.tau = tau
         self.market_caps = market_caps
+        self.views = views
+        self.risk_aversion = risk_aversion
 
     def optimize(self, returns: pd.DataFrame, **kwargs) -> pd.Series:
         """
         Optimize using Black-Litterman model.
         """
         # Calculate covariance
-        S = risk_models.sample_cov(returns)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
         # Market-cap weights (or equal weight if not provided)
         if self.market_caps is not None:
-            market_caps_series = pd.Series(self.market_caps)
-            market_prior = market_caps_series / market_caps_series.sum()
+            market_caps = pd.Series(self.market_caps).reindex(returns.columns)
         else:
-            market_prior = pd.Series(1.0 / len(returns.columns), index=returns.columns)
+            market_caps = pd.Series(1.0, index=returns.columns)
 
-        # Black-Litterman without views (default to market equilibrium)
-        bl = BlackLittermanModel(S, pi=market_prior, tau=self.tau)
+        # Equilibrium (market-implied) returns
+        prior = black_litterman.market_implied_prior_returns(
+            market_caps, self.risk_aversion, S, risk_free_rate=self.risk_free_rate
+        )
 
-        # Get posterior returns
-        ret_bl = bl.bl_returns()
+        if self.views:
+            # Blend the prior with absolute views, e.g. {"AAPL": 0.10}
+            bl = BlackLittermanModel(S, pi=prior, absolute_views=self.views, tau=self.tau)
+            ret_bl = bl.bl_returns()
+        else:
+            # Without views the posterior equals the prior
+            ret_bl = prior
 
         # Optimize using Black-Litterman returns
         ef = EfficientFrontier(ret_bl, S)
@@ -278,8 +320,8 @@ class TargetReturnOptimizer(BaseOptimizer):
         Minimize variance subject to target return constraint.
         """
         # Calculate expected returns and covariance
-        mu = expected_returns.mean_historical_return(returns)
-        S = risk_models.sample_cov(returns)
+        mu = expected_returns.mean_historical_return(returns, returns_data=True)
+        S = risk_models.sample_cov(returns, returns_data=True)
 
         # Set weight bounds
         weight_bounds = (-1, 1) if self.allow_short else (0, 1)

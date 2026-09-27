@@ -92,7 +92,7 @@ def main():
     logger.info("Preprocessing data...")
     preprocessor = DataPreprocessor(min_history=126)
     prices_clean = preprocessor.clean_prices(prices)
-    returns = preprocessor.calculate_returns(prices_clean, method='log')
+    returns = preprocessor.calculate_returns(prices_clean, method='simple')
 
     logger.info(f"Clean data: {len(returns)} days, {len(returns.columns)} assets")
 
@@ -100,7 +100,7 @@ def main():
     benchmark_ticker = assets_config['benchmark']['ticker']
     logger.info(f"\nFetching benchmark data ({benchmark_ticker})...")
     benchmark_prices = fetcher.get_prices([benchmark_ticker], start_date, end_date)
-    benchmark_returns = preprocessor.calculate_returns(benchmark_prices, method='log')
+    benchmark_returns = preprocessor.calculate_returns(benchmark_prices, method='simple')
     benchmark_returns = benchmark_returns[benchmark_ticker]
 
     # Initialize optimizers

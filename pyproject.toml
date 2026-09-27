@@ -1,0 +1,15 @@
+# Tool configuration only. The code is not packaged for pip yet; see the
+# README for how to run it from a clone.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py310"
+extend-exclude = ["data", "results"]
+
+[tool.ruff.lint]
+# Only errors that break code at runtime for now (syntax errors, undefined
+# names). Style rules can be enabled gradually.
+select = ["E9", "F63", "F7", "F82"]

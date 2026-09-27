@@ -53,17 +53,20 @@ class DataPreprocessor:
             prices_clean = prices_clean.replace(0, np.nan)
             prices_clean = prices_clean[prices_clean > min_price]
 
+        # Count real observations before filling, otherwise every asset
+        # would look like it has full history
+        valid_assets = (prices_clean.count() >= self.min_history)
+
         # Handle missing values
         if handle_missing == "forward_fill":
-            prices_clean = prices_clean.fillna(method='ffill')
-            prices_clean = prices_clean.fillna(method='bfill')
+            prices_clean = prices_clean.ffill()
+            prices_clean = prices_clean.bfill()
         elif handle_missing == "interpolate":
             prices_clean = prices_clean.interpolate(method='linear')
         elif handle_missing == "drop":
             prices_clean = prices_clean.dropna()
 
         # Remove assets with insufficient history
-        valid_assets = (prices_clean.count() >= self.min_history)
         prices_clean = prices_clean.loc[:, valid_assets]
 
         removed = set(prices.columns) - set(prices_clean.columns)
@@ -116,7 +119,7 @@ class DataPreprocessor:
         if handle_missing == "zero_fill":
             returns_clean = returns_clean.fillna(0)
         elif handle_missing == "forward_fill":
-            returns_clean = returns_clean.fillna(method='ffill')
+            returns_clean = returns_clean.ffill()
             returns_clean = returns_clean.fillna(0)
         elif handle_missing == "drop":
             returns_clean = returns_clean.dropna()

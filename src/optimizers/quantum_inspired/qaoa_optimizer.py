@@ -1,6 +1,10 @@
 """
-QAOA (Quantum Approximate Optimization Algorithm) for portfolio optimization.
-Uses Qiskit to implement QAOA-inspired classical simulation.
+QAOA-inspired portfolio optimization.
+
+Note: no quantum circuit is built or simulated here. QAOAPortfolioOptimizer
+formulates asset selection as a QUBO and solves it with classical simulated
+annealing; QAOAContinuousOptimizer is a classical SLSQP risk/return trade-off.
+Qiskit is only required as an installation check for QAOAPortfolioOptimizer.
 """
 
 import pandas as pd
@@ -9,13 +13,11 @@ from typing import Optional, Dict
 import logging
 
 try:
-    from qiskit import QuantumCircuit
-    from qiskit.circuit import Parameter
-    from qiskit_algorithms import QAOA
-    from qiskit_algorithms.optimizers import COBYLA, SLSQP
-    from qiskit.primitives import Sampler
-    from qiskit_optimization import QuadraticProgram
-    from qiskit_optimization.converters import QuadraticProgramToQubo
+    # qiskit.primitives.Sampler was removed in Qiskit 2.0, so only import
+    # names that exist in both Qiskit 1.x and 2.x.
+    import qiskit  # noqa: F401
+    import qiskit_algorithms  # noqa: F401
+    import qiskit_optimization  # noqa: F401
     QISKIT_AVAILABLE = True
 except ImportError:
     QISKIT_AVAILABLE = False

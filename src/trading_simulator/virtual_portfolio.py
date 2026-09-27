@@ -42,8 +42,14 @@ class Position:
             return ((self.entry_price - self.current_price) / self.entry_price) * 100
 
     def position_value(self) -> float:
-        """Current market value of position."""
-        return self.current_price * self.quantity
+        """
+        Current value of the position.
+
+        Opening a position sets aside entry_price * quantity of cash (for a
+        short this acts as collateral), so the value is that amount plus the
+        unrealized P&L. For a long this equals current_price * quantity.
+        """
+        return self.entry_price * self.quantity + self.unrealized_pnl()
 
 
 @dataclass
@@ -204,8 +210,9 @@ class VirtualPortfolio:
             pnl = (position.entry_price - exit_price) * position.quantity
             pnl_pct = ((position.entry_price - exit_price) / position.entry_price) * 100
 
-        # Add cash back
-        proceeds = exit_price * position.quantity
+        # Return the capital set aside at entry plus the realized P&L
+        # (equals exit_price * quantity for a long)
+        proceeds = position.entry_price * position.quantity + pnl
         self.cash += proceeds
 
         # Create trade record
