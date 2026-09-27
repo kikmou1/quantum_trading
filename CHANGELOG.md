@@ -5,6 +5,10 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-27
+
+First tagged release.
+
 ### Fixed
 - Classical optimizers passed returns to PyPortfolioOpt functions that expect
   prices. Mean-Variance, Maximum Sharpe, and Target Return crashed, and
@@ -42,3 +46,6 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Offline, reproducible example: `examples/synthetic_backtest.py`.
 - MIT license, contributing guide, changelog, issue and pull request templates.
 - Documented limitations of the backtests and of the quantum-inspired methods.
+
+[Unreleased]: https://github.com/kikmou1/quantum_trading/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/kikmou1/quantum_trading/releases/tag/v0.1.0
