@@ -85,12 +85,6 @@ medium_portfolio:
     - CAT
     - GE
 
-# Large portfolio for scalability testing (100 assets)
-large_portfolio:
-  name: "S&P 500 Top 100"
-  # Will be generated programmatically or use index ETF components
-  use_sp500_top_100: true
-
 # Sector-specific portfolios for testing
 tech_heavy:
   name: "Technology Focused"
@@ -132,8 +126,3 @@ defensive:
 benchmark:
   name: "Market Benchmark"
   ticker: SPY  # S&P 500 ETF
-
-# Risk-free rate proxy
-risk_free:
-  ticker: "^IRX"  # 13-week Treasury Bill
-  default_rate: 0.04  # 4% annual rate as fallback

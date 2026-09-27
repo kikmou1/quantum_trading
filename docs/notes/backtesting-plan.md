@@ -1,3 +1,10 @@
+> **Planning notes, not documentation.** This is the original plan written
+> before the code. Many items in it were never built, including VQE, tensor
+> network and simulated bifurcation optimizers, walk-forward analysis,
+> statistical significance tests, and most of the file layout in section 8.
+> The "expected" results are hypotheses, not findings. See the
+> [README](../../README.md) for what exists.
+
 # Comprehensive Quantum-Inspired Trading Backtesting Plan
 
 ## Executive Summary
@@ -549,28 +556,28 @@ quantum_trading/
 ## 12. Success Criteria
 
 ### Minimum Viable Product (MVP):
-- ✅ 5+ classical algorithms implemented
-- ✅ 3+ quantum-inspired algorithms implemented
-- ✅ Working backtesting framework
-- ✅ 20-asset portfolio tested over 5 years
-- ✅ Basic performance metrics calculated
-- ✅ Simple visualization of results
+- [ ] 5+ classical algorithms implemented
+- [ ] 3+ quantum-inspired algorithms implemented
+- [ ] Working backtesting framework
+- [ ] 20-asset portfolio tested over 5 years
+- [ ] Basic performance metrics calculated
+- [ ] Simple visualization of results
 
 ### Full Success:
-- ✅ 10+ algorithms compared
-- ✅ Multiple asset universes tested (20, 50, 100 assets)
-- ✅ Comprehensive performance metrics
-- ✅ Statistical significance testing
-- ✅ Interactive dashboard
-- ✅ Publication-quality report
-- ✅ Reproducible code repository
+- [ ] 10+ algorithms compared
+- [ ] Multiple asset universes tested (20, 50, 100 assets)
+- [ ] Comprehensive performance metrics
+- [ ] Statistical significance testing
+- [ ] Interactive dashboard
+- [ ] Publication-quality report
+- [ ] Reproducible code repository
 
 ### Stretch Goals:
-- ✅ Real-time rebalancing alerts
-- ✅ Integration with paper trading API
-- ✅ Machine learning enhanced predictions
-- ✅ Multi-asset class portfolios
-- ✅ Academic paper submission
+- [ ] Real-time rebalancing alerts
+- [ ] Integration with paper trading API
+- [ ] Machine learning enhanced predictions
+- [ ] Multi-asset class portfolios
+- [ ] Academic paper submission
 
 ---
 

@@ -74,3 +74,28 @@ def test_turnover_is_one_way():
 def test_unknown_frequency_raises():
     with pytest.raises(ValueError):
         BacktestEngine(rebalance_frequency="hourly")._get_rebalance_dates(pd.bdate_range("2021-01-01", periods=5))
+
+
+def test_benchmark_metrics_are_reported(returns):
+    benchmark = returns.mean(axis=1)
+    engine = BacktestEngine()
+    comparison, _ = engine.run_multiple_backtests(
+        returns, [EqualWeightOptimizer()], lookback_window=60, benchmark_returns=benchmark
+    )
+    row = comparison.iloc[0]
+    for column in ["alpha", "beta", "information_ratio", "tracking_error"]:
+        assert np.isfinite(row[column]), column
+    # Equal weight of the same assets tracks the equal-weight benchmark closely
+    assert row["beta"] == pytest.approx(1.0, abs=0.05)
+
+
+def test_metrics_exclude_uninvested_lookback_period():
+    dates = pd.bdate_range("2021-01-01", periods=100)
+    returns = pd.DataFrame(0.001, index=dates, columns=["X", "Y"])
+    engine = BacktestEngine(transaction_cost_pct=0.0)
+    result = engine.run_backtest(returns, EqualWeightOptimizer(), lookback_window=10)
+
+    first_allocation = result["weights_over_time"][0]["date"]
+    n_invested_days = (dates >= first_allocation).sum()
+    assert len(result["portfolio_returns"]) == n_invested_days
+    np.testing.assert_allclose(result["portfolio_returns"].values, 0.001)

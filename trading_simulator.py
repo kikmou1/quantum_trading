@@ -16,7 +16,6 @@ import logging
 import yaml
 
 from data_collection.fetchers import DataFetcher
-from data_collection.preprocessors import DataPreprocessor
 from trading_simulator.signal_generator import HybridSignalGenerator, SignalType
 from trading_simulator.virtual_portfolio import VirtualPortfolio
 
@@ -54,7 +53,6 @@ class PointInTimeTradingSimulator:
         self.max_position_pct = max_position_pct
 
         self.data_fetcher = DataFetcher()
-        self.preprocessor = DataPreprocessor()
         self.signal_generator = HybridSignalGenerator()
         self.portfolio = VirtualPortfolio(initial_capital, max_position_pct)
 
@@ -69,12 +67,12 @@ class PointInTimeTradingSimulator:
 
         for ticker in self.tickers:
             try:
-                prices = self.data_fetcher.get_prices([ticker], start_date, end_date)
-                clean_prices = self.preprocessor.clean_prices(prices)
+                # The signal generators need full daily bars, not just closes
+                bars = self.data_fetcher.get_ohlcv(ticker, start_date, end_date)
 
-                if len(clean_prices) > 0:
-                    self.historical_data[ticker] = clean_prices
-                    logger.info(f"  ✓ {ticker}: {len(clean_prices)} days")
+                if len(bars) > 0:
+                    self.historical_data[ticker] = bars
+                    logger.info(f"  ✓ {ticker}: {len(bars)} days")
                 else:
                     logger.warning(f"  ✗ {ticker}: No data available")
 
@@ -93,9 +91,10 @@ class PointInTimeTradingSimulator:
 
         Steps:
         1. Use data BEFORE trading_date to generate signals
-        2. Execute trades at market open
-        3. Monitor positions during the day
-        4. Compare predictions vs actual outcome
+        2. Open positions at the last close before trading_date
+        3. Exit open positions whose stop or target is crossed by
+           trading_date's close
+        4. Score the predictions against the next few days (reporting only)
 
         Args:
             trading_date: The day to simulate trading
@@ -105,7 +104,7 @@ class PointInTimeTradingSimulator:
             Dictionary with simulation results
         """
         logger.info("\n" + "="*80)
-        logger.info(f"🎯 SIMULATING TRADING DAY: {trading_date.strftime('%Y-%m-%d')}")
+        logger.info(f"SIMULATING TRADING DAY: {trading_date.strftime('%Y-%m-%d')}")
         logger.info("="*80)
 
         results = {
@@ -122,7 +121,7 @@ class PointInTimeTradingSimulator:
         }
 
         # Step 1: Get data BEFORE trading date (point-in-time correctness)
-        logger.info(f"\n📊 Step 1: Gathering historical data (using only data BEFORE {trading_date.date()})")
+        logger.info(f"\nStep 1: Gathering historical data (using only data BEFORE {trading_date.date()})")
 
         for ticker in self.tickers:
             if ticker not in self.historical_data:
@@ -174,29 +173,22 @@ class PointInTimeTradingSimulator:
                         )
                         results['predictions'][ticker] = predictions
 
-        # Step 5: Monitor positions through the day and next few days
-        logger.info(f"\n📈 Step 2: Monitoring positions over next {forecast_next_n_days} days...")
+        # Step 5: Mark open positions to today's close and exit any that hit
+        # their stop or target. Later days are handled when the simulation
+        # reaches them, so no future price ever changes the portfolio early.
+        current_prices = {}
+        for ticker in self.portfolio.positions.keys():
+            ticker_data = self.historical_data.get(ticker)
+            if ticker_data is not None and trading_date in ticker_data.index:
+                current_prices[ticker] = ticker_data.loc[trading_date, 'Close']
 
-        for day_offset in range(1, forecast_next_n_days + 1):
-            check_date = trading_date + pd.Timedelta(days=day_offset)
+        if current_prices:
+            self.portfolio.update_positions(current_prices, trading_date)
+        self.portfolio.record_equity_snapshot(trading_date)
 
-            # Get actual prices for this day
-            current_prices = {}
-            for ticker in self.portfolio.positions.keys():
-                if ticker in self.historical_data:
-                    ticker_data = self.historical_data[ticker]
-                    day_data = ticker_data[ticker_data.index == check_date]
-
-                    if len(day_data) > 0:
-                        current_prices[ticker] = day_data['Close'].iloc[0]
-
-            # Update positions (check stops and targets)
-            if current_prices:
-                self.portfolio.update_positions(current_prices, check_date)
-                self.portfolio.record_equity_snapshot(check_date)
-
-        # Step 6: Get actual outcomes
-        logger.info(f"\n🎲 Step 3: Comparing predictions vs actual outcomes...")
+        # Step 6: Score the predictions against the following days. This is
+        # reporting only and does not affect the portfolio.
+        logger.info(f"\nStep 6: Comparing predictions vs actual outcomes...")
 
         for ticker, predictions in results['predictions'].items():
             if ticker not in self.historical_data:
@@ -232,8 +224,8 @@ class PointInTimeTradingSimulator:
                     (predictions['predicted_direction'] == 'DOWN' and actual_return < 0)
                 )
 
-                emoji = "✅" if direction_correct else "❌"
-                logger.info(f"\n{emoji} {ticker}:")
+                verdict = "correct" if direction_correct else "wrong"
+                logger.info(f"\n{ticker} (direction {verdict}):")
                 logger.info(f"  Predicted: {predictions['predicted_direction']} to ${predictions['target_price']:.2f}")
                 logger.info(f"  Actual: ${actual_prices[-1]:.2f} ({actual_return:+.2f}%)")
                 logger.info(f"  High: ${actual_high:.2f}, Low: ${actual_low:.2f}")
@@ -244,10 +236,10 @@ class PointInTimeTradingSimulator:
         results['portfolio_value_end'] = self.portfolio.total_equity()
         results['daily_pnl'] = results['portfolio_value_end'] - results['portfolio_value_start']
         results['positions_closed'] = len([t for t in self.portfolio.trades
-                                          if t.entry_date >= trading_date])
+                                          if t.exit_date == trading_date])
 
         logger.info("\n" + "="*80)
-        logger.info("📊 DAY SUMMARY")
+        logger.info("DAY SUMMARY")
         logger.info("="*80)
         logger.info(f"Signals Generated: {len(results['signals_generated'])}")
         logger.info(f"Positions Opened: {results['positions_opened']}")
@@ -295,7 +287,7 @@ class PointInTimeTradingSimulator:
         Run simulation across multiple trading days.
         """
         logger.info("\n" + "="*80)
-        logger.info("🚀 MULTI-DAY TRADING SIMULATION")
+        logger.info("MULTI-DAY TRADING SIMULATION")
         logger.info("="*80)
         logger.info(f"Period: {start_date} to {end_date}")
         logger.info(f"Tickers: {', '.join(self.tickers)}")
@@ -305,7 +297,9 @@ class PointInTimeTradingSimulator:
 
         # Load data (with buffer for lookback)
         data_start = (pd.Timestamp(start_date) - pd.Timedelta(days=self.lookback_days * 2)).strftime('%Y-%m-%d')
-        self.load_data(data_start, end_date)
+        # Load a few days past the end so the last predictions can be scored
+        data_end = (pd.Timestamp(end_date) + pd.Timedelta(days=forecast_days * 2)).strftime('%Y-%m-%d')
+        self.load_data(data_start, data_end)
 
         if not self.historical_data:
             logger.error("No data loaded. Exiting.")
@@ -334,7 +328,7 @@ class PointInTimeTradingSimulator:
 
         # Final summary
         logger.info("\n" + "="*80)
-        logger.info("🏁 SIMULATION COMPLETE")
+        logger.info("SIMULATION COMPLETE")
         logger.info("="*80)
 
         self.portfolio.print_summary()
@@ -345,7 +339,7 @@ class PointInTimeTradingSimulator:
     def print_performance_analysis(self):
         """Print detailed performance analysis."""
         print("\n" + "="*80)
-        print("📈 PREDICTION ACCURACY ANALYSIS")
+        print("PREDICTION ACCURACY ANALYSIS")
         print("="*80)
 
         total_predictions = 0

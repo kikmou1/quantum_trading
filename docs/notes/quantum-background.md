@@ -1,3 +1,10 @@
+> **Background reading, not documentation.** These are research notes on
+> quantum and quantum-inspired methods in finance, collected while planning
+> the project. The figures and claims come from press releases and papers and
+> have not been checked here; some are disputed (see the HSBC section). None
+> of it describes this repository's code: its "quantum-inspired" optimizers
+> are classical heuristics. See the [README](../../README.md#limitations).
+
 # Quantum-inspired algorithms are practical today on standard laptops for trading optimization
 
 Quantum-inspired algorithms can run efficiently on normal laptops and deliver measurable improvements in trading applications right now. While true quantum simulation is severely limited (maximum 25-30 qubits on high-end laptops), quantum-inspired classical algorithms have no such constraints and can handle portfolios of 100+ assets. The landmark breakthrough came in September 2025 when **HSBC and IBM demonstrated a 34% improvement in bond trading predictions** using quantum hardware with real production data—the first empirical proof of quantum advantage in algorithmic trading. Meanwhile, quantum-inspired systems like Toshiba's Simulated Bifurcation Machine are already deployed in production, achieving **33-microsecond latency** for analyzing 210 stock pairs, making them suitable even for high-frequency trading.

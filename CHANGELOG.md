@@ -5,6 +5,38 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- `trading_simulator.py` crashed on its first trading day because the
+  signal generators received closing prices only. It now downloads full
+  daily bars (`DataFetcher.get_ohlcv`).
+- The dashboard's trade simulation failed whenever a signal was generated,
+  because yfinance's two-level column headers turned prices into Series.
+  Bars are now flattened on load (`normalize_ohlcv`).
+- `run_backtest.py` reported the worst drawdown as the "lowest drawdown",
+  and compared quantum-inspired and classical Sharpe ratios as a ratio. It
+  now reports the least severe drawdown and the Sharpe difference.
+- The trading simulator ran each day's next five days of prices through the
+  portfolio before simulating the following day, so later decisions depended
+  on future prices. Each day now only marks positions to its own close.
+- Alpha, beta and information ratio were always empty because the benchmark
+  was never passed to the metrics. They are now computed against SPY.
+- Backtest metrics included the lookback period before the first allocation,
+  when the portfolio holds only cash. They now start at the first allocation.
+
+### Changed
+- `requirements.txt` lists only packages the code imports. It dropped about
+  20 unused ones, including PyTorch, PennyLane, vectorbt, backtrader and
+  pandas-ta, so the full install takes seconds instead of many minutes.
+- Removed config settings that nothing reads (walk-forward analysis, VQE,
+  statistical tests, parallel runs and others) and the `large_portfolio`
+  universe, which had no tickers.
+- Replaced `QUICKSTART.md`, `README_BACKTEST.md`,
+  `TRADING_SIMULATOR_README.md` and `DASHBOARD_GUIDE.md`, which described
+  features that do not exist and showed invented output, with the README and
+  two guides in `docs/`. Moved the planning and background notes to
+  `docs/notes/`, labeled as notes.
+- Plain-text console and dashboard output.
+
 ## [0.1.0] - 2026-09-27
 
 First tagged release.

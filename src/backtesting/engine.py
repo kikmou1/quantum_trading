@@ -51,6 +51,7 @@ class BacktestEngine:
         returns: pd.DataFrame,
         optimizer,
         lookback_window: int = 252,
+        benchmark_returns: Optional[pd.Series] = None,
         **optimizer_kwargs
     ) -> Dict:
         """
@@ -60,6 +61,8 @@ class BacktestEngine:
             returns: DataFrame of asset returns
             optimizer: Optimizer instance
             lookback_window: Number of periods to use for optimization
+            benchmark_returns: Optional benchmark returns for alpha, beta
+                and information ratio
             **optimizer_kwargs: Additional kwargs for optimizer
 
         Returns:
@@ -123,12 +126,23 @@ class BacktestEngine:
                 'value': current_value
             })
 
-        # Convert to DataFrames
+        # Convert to DataFrames. Performance is measured from the first
+        # allocation; before it the portfolio is uninvested during the
+        # lookback window, and those flat days would dilute every metric.
         portfolio_values_df = pd.DataFrame(portfolio_values).set_index('date')
+        if portfolio_weights_over_time:
+            # Start one day earlier so the first invested day's return counts
+            first_allocation = portfolio_weights_over_time[0]['date']
+            start = max(portfolio_values_df.index.get_loc(first_allocation) - 1, 0)
+            portfolio_values_df = portfolio_values_df.iloc[start:]
         portfolio_returns = portfolio_values_df['value'].pct_change().dropna()
 
         # Calculate metrics
-        performance_metrics = self.performance_calc.calculate_all_metrics(portfolio_returns)
+        if benchmark_returns is not None:
+            benchmark_returns = benchmark_returns.reindex(portfolio_returns.index)
+        performance_metrics = self.performance_calc.calculate_all_metrics(
+            portfolio_returns, benchmark_returns
+        )
         risk_metrics = self.risk_calc.calculate_all_risk_metrics(portfolio_returns)
 
         # Additional metrics
@@ -177,7 +191,8 @@ class BacktestEngine:
                 result = self.run_backtest(
                     returns,
                     optimizer,
-                    lookback_window=lookback_window
+                    lookback_window=lookback_window,
+                    benchmark_returns=benchmark_returns
                 )
 
                 # Add benchmark comparison if available
@@ -219,7 +234,9 @@ class BacktestEngine:
         ]
 
         if benchmark_returns is not None:
-            comparison_metrics.extend(['excess_return', 'tracking_error', 'alpha', 'beta'])
+            comparison_metrics.extend(
+                ['excess_return', 'tracking_error', 'alpha', 'beta', 'information_ratio']
+            )
 
         comparison = []
         for result in results_list:
