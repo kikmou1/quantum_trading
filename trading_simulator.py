@@ -91,9 +91,10 @@ class PointInTimeTradingSimulator:
 
         Steps:
         1. Use data BEFORE trading_date to generate signals
-        2. Execute trades at market open
-        3. Monitor positions during the day
-        4. Compare predictions vs actual outcome
+        2. Open positions at the last close before trading_date
+        3. Exit open positions whose stop or target is crossed by
+           trading_date's close
+        4. Score the predictions against the next few days (reporting only)
 
         Args:
             trading_date: The day to simulate trading
@@ -172,28 +173,21 @@ class PointInTimeTradingSimulator:
                         )
                         results['predictions'][ticker] = predictions
 
-        # Step 5: Monitor positions through the day and next few days
-        logger.info(f"\n📈 Step 2: Monitoring positions over next {forecast_next_n_days} days...")
+        # Step 5: Mark open positions to today's close and exit any that hit
+        # their stop or target. Later days are handled when the simulation
+        # reaches them, so no future price ever changes the portfolio early.
+        current_prices = {}
+        for ticker in self.portfolio.positions.keys():
+            ticker_data = self.historical_data.get(ticker)
+            if ticker_data is not None and trading_date in ticker_data.index:
+                current_prices[ticker] = ticker_data.loc[trading_date, 'Close']
 
-        for day_offset in range(1, forecast_next_n_days + 1):
-            check_date = trading_date + pd.Timedelta(days=day_offset)
+        if current_prices:
+            self.portfolio.update_positions(current_prices, trading_date)
+        self.portfolio.record_equity_snapshot(trading_date)
 
-            # Get actual prices for this day
-            current_prices = {}
-            for ticker in self.portfolio.positions.keys():
-                if ticker in self.historical_data:
-                    ticker_data = self.historical_data[ticker]
-                    day_data = ticker_data[ticker_data.index == check_date]
-
-                    if len(day_data) > 0:
-                        current_prices[ticker] = day_data['Close'].iloc[0]
-
-            # Update positions (check stops and targets)
-            if current_prices:
-                self.portfolio.update_positions(current_prices, check_date)
-                self.portfolio.record_equity_snapshot(check_date)
-
-        # Step 6: Get actual outcomes
+        # Step 6: Score the predictions against the following days. This is
+        # reporting only and does not affect the portfolio.
         logger.info(f"\n🎲 Step 3: Comparing predictions vs actual outcomes...")
 
         for ticker, predictions in results['predictions'].items():
@@ -242,7 +236,7 @@ class PointInTimeTradingSimulator:
         results['portfolio_value_end'] = self.portfolio.total_equity()
         results['daily_pnl'] = results['portfolio_value_end'] - results['portfolio_value_start']
         results['positions_closed'] = len([t for t in self.portfolio.trades
-                                          if t.entry_date >= trading_date])
+                                          if t.exit_date == trading_date])
 
         logger.info("\n" + "="*80)
         logger.info("📊 DAY SUMMARY")
@@ -303,7 +297,9 @@ class PointInTimeTradingSimulator:
 
         # Load data (with buffer for lookback)
         data_start = (pd.Timestamp(start_date) - pd.Timedelta(days=self.lookback_days * 2)).strftime('%Y-%m-%d')
-        self.load_data(data_start, end_date)
+        # Load a few days past the end so the last predictions can be scored
+        data_end = (pd.Timestamp(end_date) + pd.Timedelta(days=forecast_days * 2)).strftime('%Y-%m-%d')
+        self.load_data(data_start, data_end)
 
         if not self.historical_data:
             logger.error("No data loaded. Exiting.")
