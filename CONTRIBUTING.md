@@ -13,8 +13,8 @@ source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements-core.txt ruff
 ```
 
-Install `requirements.txt` instead if you work on the Qiskit or D-Wave code,
-the trading simulator, or the dashboard.
+Install `requirements.txt` instead if you work on the Qiskit or D-Wave code
+or the dashboard.
 
 ## Before opening a pull request
 
