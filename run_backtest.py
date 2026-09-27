@@ -168,7 +168,7 @@ def main():
     # Sort by Sharpe ratio
     comparison_df_sorted = comparison_df.sort_values('sharpe_ratio', ascending=False)
 
-    print("\n📊 PERFORMANCE SUMMARY")
+    print("\nPERFORMANCE SUMMARY")
     print("=" * 80)
 
     # Display key metrics
@@ -232,23 +232,23 @@ def main():
 
     # Print conclusions
     print("\n" + "=" * 80)
-    print("🎯 KEY FINDINGS")
+    print("KEY FINDINGS")
     print("=" * 80)
 
     best_sharpe = comparison_df_sorted.iloc[0]
-    print(f"\n🏆 Best Sharpe Ratio: {best_sharpe['optimizer_name']}")
+    print(f"\nBest Sharpe Ratio: {best_sharpe['optimizer_name']}")
     print(f"   Sharpe Ratio: {best_sharpe['sharpe_ratio']:.4f}")
     print(f"   Annual Return: {best_sharpe['annualized_return']*100:.2f}%")
     print(f"   Volatility: {best_sharpe['annualized_volatility']*100:.2f}%")
 
     best_return = comparison_df_sorted.nlargest(1, 'annualized_return').iloc[0]
-    print(f"\n💰 Highest Return: {best_return['optimizer_name']}")
+    print(f"\nHighest Return: {best_return['optimizer_name']}")
     print(f"   Annual Return: {best_return['annualized_return']*100:.2f}%")
     print(f"   Total Return: {best_return['total_return_pct']:.2f}%")
 
     # Drawdowns are negative, so the least severe one is the largest value
     lowest_dd = comparison_df_sorted.nlargest(1, 'maximum_drawdown').iloc[0]
-    print(f"\n🛡️  Lowest Drawdown: {lowest_dd['optimizer_name']}")
+    print(f"\nLowest Drawdown: {lowest_dd['optimizer_name']}")
     print(f"   Max Drawdown: {lowest_dd['maximum_drawdown']*100:.2f}%")
 
     # Quantum vs Classical comparison
@@ -256,7 +256,7 @@ def main():
     classical_results = comparison_df_sorted[~comparison_df_sorted['optimizer_name'].str.contains('QAOA|Annealing|Hybrid|Quantum', case=False)]
 
     if len(quantum_results) > 0 and len(classical_results) > 0:
-        print("\n🔬 QUANTUM-INSPIRED vs CLASSICAL COMPARISON")
+        print("\nQUANTUM-INSPIRED vs CLASSICAL COMPARISON")
         print("=" * 80)
         classical_sharpe = classical_results['sharpe_ratio'].mean()
         quantum_sharpe = quantum_results['sharpe_ratio'].mean()
@@ -267,7 +267,7 @@ def main():
         print(f"Difference (quantum-inspired - classical): {quantum_sharpe - classical_sharpe:+.4f}")
 
     print("\n" + "=" * 80)
-    print("✅ BACKTEST COMPLETE")
+    print("BACKTEST COMPLETE")
     print("=" * 80)
     print(f"\nResults saved to: {output_dir}")
     print(f"Visualizations saved to: {backtest_config['outputs']['figures_dir']}")

@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
     # Test: Get summary
     summary = manager.get_asset_summary()
-    print("\n📊 ASSET DATABASE SUMMARY")
+    print("\nASSET DATABASE SUMMARY")
     print("="*70)
     print(f"Total Assets: {summary['total_assets']}")
     print(f"\nCategories: {', '.join(summary['categories'])}")
@@ -220,20 +220,20 @@ if __name__ == "__main__":
         print(f"  {cat}: {count}")
 
     # Test: Search for gold
-    print("\n\n🔍 SEARCH: 'gold'")
+    print("\n\nSEARCH: 'gold'")
     print("="*70)
     gold_assets = manager.search_assets('gold')
     print(gold_assets[['symbol', 'name', 'category']].to_string(index=False))
 
     # Test: Get commodities
-    print("\n\n📦 CATEGORY: Commodity")
+    print("\n\nCATEGORY: Commodity")
     print("="*70)
     commodities = manager.get_by_category('Commodity')
     print(f"Found {len(commodities)} commodities")
     print(commodities[['symbol', 'name', 'description']].head(10).to_string(index=False))
 
     # Test: Get asset info
-    print("\n\n💰 ASSET INFO: GC=F (Gold Futures)")
+    print("\n\nASSET INFO: GC=F (Gold Futures)")
     print("="*70)
     gold_info = manager.get_asset_info('GC=F')
     if gold_info:
@@ -241,7 +241,7 @@ if __name__ == "__main__":
             print(f"  {key}: {value}")
 
     # Test: Popular assets
-    print("\n\n⭐ POPULAR ASSETS")
+    print("\n\nPOPULAR ASSETS")
     print("="*70)
     popular = manager.get_popular_assets(10)
     print(popular[['symbol', 'name', 'category']].to_string(index=False))

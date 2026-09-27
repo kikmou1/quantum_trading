@@ -148,7 +148,7 @@ class VirtualPortfolio:
         # Add to positions
         self.positions[signal.ticker] = position
 
-        logger.info(f"📈 OPENED {signal.signal_type.value} position in {signal.ticker}")
+        logger.info(f"OPENED {signal.signal_type.value} position in {signal.ticker}")
         logger.info(f"   Entry: ${signal.entry_price:.2f} x {signal.position_size} shares = ${cost:.2f}")
         logger.info(f"   Stop Loss: ${signal.stop_loss:.2f}, Take Profit: ${signal.take_profit:.2f}")
         logger.info(f"   Cash remaining: ${self.cash:.2f}")
@@ -235,8 +235,8 @@ class VirtualPortfolio:
         self.trades.append(trade)
 
         # Log the trade
-        emoji = "✅" if pnl > 0 else "❌"
-        logger.info(f"{emoji} CLOSED {position.side} position in {ticker} - {reason}")
+        result = "WIN" if pnl > 0 else "LOSS"
+        logger.info(f"CLOSED ({result}) {position.side} position in {ticker} - {reason}")
         logger.info(f"   Entry: ${position.entry_price:.2f}, Exit: ${exit_price:.2f}")
         logger.info(f"   P&L: ${pnl:+.2f} ({pnl_pct:+.2f}%), Holding: {holding_days} days")
 
@@ -296,10 +296,10 @@ class VirtualPortfolio:
     def print_summary(self):
         """Print portfolio summary."""
         print("\n" + "="*70)
-        print("📊 PORTFOLIO SUMMARY")
+        print("PORTFOLIO SUMMARY")
         print("="*70)
 
-        print(f"\n💰 Capital:")
+        print(f"\nCapital:")
         print(f"   Initial: ${self.initial_capital:,.2f}")
         print(f"   Current Equity: ${self.total_equity():,.2f}")
         print(f"   Cash: ${self.cash:,.2f}")
@@ -307,15 +307,14 @@ class VirtualPortfolio:
         print(f"   Return: {((self.total_equity() - self.initial_capital) / self.initial_capital) * 100:+.2f}%")
 
         if self.positions:
-            print(f"\n📈 Open Positions ({len(self.positions)}):")
+            print(f"\nOpen Positions ({len(self.positions)}):")
             for ticker, pos in self.positions.items():
-                pnl_emoji = "🟢" if pos.unrealized_pnl() > 0 else "🔴"
-                print(f"   {pnl_emoji} {ticker}: {pos.side} {pos.quantity} @ ${pos.entry_price:.2f}")
+                print(f"   {ticker}: {pos.side} {pos.quantity} @ ${pos.entry_price:.2f}")
                 print(f"      Current: ${pos.current_price:.2f}, P&L: ${pos.unrealized_pnl():+.2f} ({pos.unrealized_pnl_pct():+.2f}%)")
 
         if self.trades:
             perf = self.get_performance_summary()
-            print(f"\n📉 Trading Performance:")
+            print(f"\nTrading Performance:")
             print(f"   Total Trades: {perf['total_trades']}")
             print(f"   Win Rate: {perf['win_rate']:.1f}% ({perf['winning_trades']}W / {perf['losing_trades']}L)")
             print(f"   Avg Win: ${perf['avg_win']:,.2f}")

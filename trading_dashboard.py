@@ -73,7 +73,7 @@ def load_asset_data(symbol: str, start_date: str, end_date: str):
                 st.error(f"No valid data after cleaning for {symbol}")
                 return None
 
-            st.success(f"✅ Loaded {len(data)} days of data")
+            st.success(f"Loaded {len(data)} days of data")
             return data
 
         except Exception as e:
@@ -243,7 +243,7 @@ def display_simulation_results(results: dict, symbol: str):
     portfolio = results['portfolio']
     future_data = results['future_data']
 
-    st.success("✅ Simulation Complete!")
+    st.success("Simulation Complete!")
 
     # Metrics row
     col1, col2, col3, col4 = st.columns(4)
@@ -279,7 +279,7 @@ def display_simulation_results(results: dict, symbol: str):
         )
 
     # Signal details
-    st.subheader("📊 Trade Signal Details")
+    st.subheader("Trade Signal Details")
 
     col1, col2 = st.columns(2)
 
@@ -295,7 +295,7 @@ def display_simulation_results(results: dict, symbol: str):
         st.write(f"**Capital Allocated:** ${signal.entry_price * signal.position_size:,.2f}")
 
     # Outcome comparison
-    st.subheader("🎯 Prediction vs Reality")
+    st.subheader("Prediction vs Reality")
 
     hit_tp = results['actual_high'] >= signal.take_profit if signal.signal_type == SignalType.LONG else results['actual_low'] <= signal.take_profit
     hit_sl = results['actual_low'] <= signal.stop_loss if signal.signal_type == SignalType.LONG else results['actual_high'] >= signal.stop_loss
@@ -317,21 +317,21 @@ def display_simulation_results(results: dict, symbol: str):
         st.metric(
             "Actual Movement",
             f"{actual_return:+.2f}%",
-            "✅ Correct" if direction_correct else "❌ Wrong"
+            "Correct" if direction_correct else "Wrong"
         )
 
     with col3:
         if hit_tp:
-            outcome = "🎯 Take Profit Hit"
+            outcome = "Take Profit Hit"
         elif hit_sl:
-            outcome = "🛑 Stop Loss Hit"
+            outcome = "Stop Loss Hit"
         else:
-            outcome = "⏳ Still Open"
+            outcome = "Still Open"
 
         st.write(f"**Outcome:** {outcome}")
 
     # Price chart with trade markers
-    st.subheader("📈 Price Chart with Trade Levels")
+    st.subheader("Price Chart with Trade Levels")
 
     fig = go.Figure()
 
@@ -388,7 +388,7 @@ def display_simulation_results(results: dict, symbol: str):
 
     # Trade history
     if portfolio.trades:
-        st.subheader("📋 Trade History")
+        st.subheader("Trade History")
 
         trades_data = []
         for trade in portfolio.trades:
@@ -408,7 +408,7 @@ def display_simulation_results(results: dict, symbol: str):
         st.dataframe(pd.DataFrame(trades_data), use_container_width=True)
 
     # All generated signals
-    with st.expander("🔍 All Generated Signals"):
+    with st.expander("All Generated Signals"):
         st.write(f"Generated {len(results['all_signals'])} signals from different strategies")
 
         for sig in results['all_signals']:
@@ -421,16 +421,16 @@ def display_simulation_results(results: dict, symbol: str):
 def main():
     """Main dashboard application."""
 
-    st.title("📈 Interactive Trading Simulator")
+    st.title("Interactive Trading Simulator")
     st.markdown("**Select an asset, choose a date, and simulate trading with predictions vs reality**")
 
     # Sidebar - Asset Selection
     with st.sidebar:
-        st.header("🔍 Asset Selection")
+        st.header("Asset Selection")
 
         # Asset database summary
         summary = st.session_state.asset_manager.get_asset_summary()
-        st.info(f"💾 Database: {summary['total_assets']} assets")
+        st.info(f"Database: {summary['total_assets']} assets")
 
         # Category filter
         category = st.selectbox(
@@ -469,7 +469,7 @@ def main():
 
             # Display asset info
             if st.session_state.selected_asset:
-                with st.expander("ℹ️ Asset Info"):
+                with st.expander("Asset Info"):
                     st.write(f"**Symbol:** {st.session_state.selected_asset['symbol']}")
                     st.write(f"**Name:** {st.session_state.selected_asset['name']}")
                     st.write(f"**Category:** {st.session_state.selected_asset['category']}")
@@ -486,7 +486,7 @@ def main():
         st.header(f"{symbol} - {name}")
 
         # Data loading section
-        with st.expander("📊 Data Settings", expanded=True):
+        with st.expander("Data Settings", expanded=True):
             col1, col2 = st.columns(2)
 
             with col1:
@@ -507,7 +507,7 @@ def main():
                     max_value=datetime.now()
                 )
 
-            if st.button("📥 Load Data", type="primary"):
+            if st.button("Load Data", type="primary"):
                 st.session_state.asset_data = load_asset_data(
                     symbol,
                     data_start.strftime('%Y-%m-%d'),
@@ -546,7 +546,7 @@ def main():
             )
 
             # Trading simulation section
-            st.header("🎯 Trading Simulation")
+            st.header("Trading Simulation")
 
             col1, col2, col3 = st.columns(3)
 
@@ -581,7 +581,7 @@ def main():
                     step=10000
                 )
 
-            if trading_date and st.button("▶️ Run Simulation", type="primary"):
+            if trading_date and st.button("Run Simulation", type="primary"):
                 results = run_simulation(
                     symbol,
                     data,
@@ -600,10 +600,10 @@ def main():
 
     else:
         # Welcome screen
-        st.info("👈 Select an asset from the sidebar to begin")
+        st.info("Select an asset from the sidebar to begin")
 
         st.markdown("""
-        ### 🚀 Quick Start Guide
+        ### Quick Start Guide
 
         1. **Select an Asset**
            - Browse by category or search
@@ -624,21 +624,15 @@ def main():
            - Compare predictions vs actual outcomes
            - View trade P&L and statistics
 
-        ### 📊 Available Assets
+        ### Available Assets
 
-        - **Stocks**: 200+ US and international stocks
-        - **ETFs**: 60+ sector, thematic, and leveraged ETFs
-        - **Commodities**: Gold, Silver, Oil, Natural Gas, Agriculture
-        - **Cryptocurrencies**: Bitcoin, Ethereum, and more
-        - **Forex**: Major currency pairs
-        - **Indices**: S&P 500, NASDAQ, Dow Jones, etc.
+        224 assets from `data/tradable_assets.txt`: 103 stocks, 54 ETFs,
+        23 commodities, 14 indices, 10 cryptocurrencies, 9 REITs, 7 currency
+        pairs and 4 bond funds.
 
-        ### 💡 Tips
-
-        - Start with liquid assets (SPY, AAPL, GC=F, BTC-USD)
-        - Test different market conditions (bull, bear, sideways)
-        - Compare multiple trading dates to see strategy consistency
-        - Use forecast days 3-10 for realistic predictions
+        Each simulation is a single trade on a single date. Compare many dates
+        before reading anything into the result, and keep in mind that there
+        are no trading costs and exits happen at daily closes.
         """)
 
 

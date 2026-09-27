@@ -467,4 +467,4 @@ if __name__ == "__main__":
 
     if signals:
         best = generator.select_best_signal(signals)
-        print(f"\n✅ Best Signal: {best.strategy_name} ({best.signal_type.value})")
+        print(f"\nBest Signal: {best.strategy_name} ({best.signal_type.value})")

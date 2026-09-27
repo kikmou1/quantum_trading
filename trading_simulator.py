@@ -104,7 +104,7 @@ class PointInTimeTradingSimulator:
             Dictionary with simulation results
         """
         logger.info("\n" + "="*80)
-        logger.info(f"🎯 SIMULATING TRADING DAY: {trading_date.strftime('%Y-%m-%d')}")
+        logger.info(f"SIMULATING TRADING DAY: {trading_date.strftime('%Y-%m-%d')}")
         logger.info("="*80)
 
         results = {
@@ -121,7 +121,7 @@ class PointInTimeTradingSimulator:
         }
 
         # Step 1: Get data BEFORE trading date (point-in-time correctness)
-        logger.info(f"\n📊 Step 1: Gathering historical data (using only data BEFORE {trading_date.date()})")
+        logger.info(f"\nStep 1: Gathering historical data (using only data BEFORE {trading_date.date()})")
 
         for ticker in self.tickers:
             if ticker not in self.historical_data:
@@ -188,7 +188,7 @@ class PointInTimeTradingSimulator:
 
         # Step 6: Score the predictions against the following days. This is
         # reporting only and does not affect the portfolio.
-        logger.info(f"\n🎲 Step 3: Comparing predictions vs actual outcomes...")
+        logger.info(f"\nStep 6: Comparing predictions vs actual outcomes...")
 
         for ticker, predictions in results['predictions'].items():
             if ticker not in self.historical_data:
@@ -224,8 +224,8 @@ class PointInTimeTradingSimulator:
                     (predictions['predicted_direction'] == 'DOWN' and actual_return < 0)
                 )
 
-                emoji = "✅" if direction_correct else "❌"
-                logger.info(f"\n{emoji} {ticker}:")
+                verdict = "correct" if direction_correct else "wrong"
+                logger.info(f"\n{ticker} (direction {verdict}):")
                 logger.info(f"  Predicted: {predictions['predicted_direction']} to ${predictions['target_price']:.2f}")
                 logger.info(f"  Actual: ${actual_prices[-1]:.2f} ({actual_return:+.2f}%)")
                 logger.info(f"  High: ${actual_high:.2f}, Low: ${actual_low:.2f}")
@@ -239,7 +239,7 @@ class PointInTimeTradingSimulator:
                                           if t.exit_date == trading_date])
 
         logger.info("\n" + "="*80)
-        logger.info("📊 DAY SUMMARY")
+        logger.info("DAY SUMMARY")
         logger.info("="*80)
         logger.info(f"Signals Generated: {len(results['signals_generated'])}")
         logger.info(f"Positions Opened: {results['positions_opened']}")
@@ -287,7 +287,7 @@ class PointInTimeTradingSimulator:
         Run simulation across multiple trading days.
         """
         logger.info("\n" + "="*80)
-        logger.info("🚀 MULTI-DAY TRADING SIMULATION")
+        logger.info("MULTI-DAY TRADING SIMULATION")
         logger.info("="*80)
         logger.info(f"Period: {start_date} to {end_date}")
         logger.info(f"Tickers: {', '.join(self.tickers)}")
@@ -328,7 +328,7 @@ class PointInTimeTradingSimulator:
 
         # Final summary
         logger.info("\n" + "="*80)
-        logger.info("🏁 SIMULATION COMPLETE")
+        logger.info("SIMULATION COMPLETE")
         logger.info("="*80)
 
         self.portfolio.print_summary()
@@ -339,7 +339,7 @@ class PointInTimeTradingSimulator:
     def print_performance_analysis(self):
         """Print detailed performance analysis."""
         print("\n" + "="*80)
-        print("📈 PREDICTION ACCURACY ANALYSIS")
+        print("PREDICTION ACCURACY ANALYSIS")
         print("="*80)
 
         total_predictions = 0
